@@ -33,13 +33,16 @@ public class TicTacToeClient {
 
     public TicTacToeClient(String serverAddress) throws Exception {
 
+
+        // Kết nối đến máy chủ
         socket = new Socket(serverAddress, PORT);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
 
+        //Setup giao diện người chơi
         messageLabel.setBackground(Color.lightGray);
         frame.getContentPane().add(messageLabel, "North");
-        messageLabel.setText("Enter your player name...");
+        messageLabel.setText("Nhập tên của bạn");
         JPanel boardPanel = new JPanel();
         JPanel textPanel = new JPanel();
 
@@ -53,10 +56,11 @@ public class TicTacToeClient {
         textPanel.add(txt_inputname);
         textPanel.add(submit);
 
+         // Xử lý sự kiện khi người chơi nhập tên và nhấn nút submit
         submit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frame.setTitle("Tic Tac Toe-Player: " + txt_inputname.getText());
-                messageLabel.setText("WELCOME " + txt_inputname.getText());
+                frame.setTitle("WangHannn: " + txt_inputname.getText());
+                messageLabel.setText("Xin chào: " + txt_inputname.getText());
                 txt_inputname.setEnabled(false);
                 submit.setEnabled(false);
                 CanStart = true;
@@ -81,6 +85,8 @@ public class TicTacToeClient {
             }
         });
 
+        //pop-up help
+
         JFrame popUpMsg = new JFrame();
         help.addActionListener(new ActionListener() {
 
@@ -97,7 +103,8 @@ public class TicTacToeClient {
 
             }
         });
-
+        
+        /// Tạo màn hình game
         for (int i = 0; i < board.length; i++) {
             final int j = i;
             board[i] = new Square();
@@ -114,6 +121,9 @@ public class TicTacToeClient {
         }
 
     }
+
+
+    //Nhận sự kiện trả về và xử lý sự kiện người chơi
 
     public void play() throws Exception {
         String response;
@@ -138,19 +148,19 @@ public class TicTacToeClient {
                 response = in.readLine();
 
                 if (response.startsWith("VALID_MOVE")) {
-                    messageLabel.setText("Valid move, wait for your opponent.");
+                    messageLabel.setText("Vui lòng chờ..., bạn kia đang nghĩ");
                     currentSquare.setIcon(icon);
                     currentSquare.repaint();
                 } else if (response.startsWith("OPPONENT_MOVED")) {
                     int loc = Integer.parseInt(response.substring(15));
                     board[loc].setIcon(opponentIcon);
                     board[loc].repaint();
-                    messageLabel.setText("Your opponent has moved, now is your turn");
+                    messageLabel.setText("Lượt cùa bạn đấy");
                 } else if (response.startsWith("VICTORY")) {
-                    JOptionPane.showMessageDialog(popUpMsg, "Congratulations. You Win.");
+                    JOptionPane.showMessageDialog(popUpMsg, "Chúc mừng bạn, bạn thắng");
                     break;
                 } else if (response.startsWith("DEFEAT")) {
-                    JOptionPane.showMessageDialog(popUpMsg, "You lose.");
+                    JOptionPane.showMessageDialog(popUpMsg, "Bạn thua");
                     break;
                 } else if (response.startsWith("TIE")) {
                     messageLabel.setText("Draw.");
@@ -168,6 +178,8 @@ public class TicTacToeClient {
         }
 
     }
+
+    //End game, muốn chơi lại hay không?
 
     private boolean wantsToPlayAgain() {
         int response = JOptionPane.showConfirmDialog(frame, "Retry?", "Play Again?", JOptionPane.YES_NO_OPTION);
@@ -187,6 +199,8 @@ public class TicTacToeClient {
             label.setIcon(icon);
         }
     }
+
+    //Hàm này ko cần p nói @@
 
     public static void main(String[] args) throws Exception {
         while (true) {
